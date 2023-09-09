@@ -2,6 +2,8 @@
 #include <cstdlib>
 #include <iostream>
 #include <string>
+#include <algorithm>
+#include <numeric>
 #include <vector>
 
 // ("",  '.') -> [""]
@@ -29,32 +31,28 @@ std::vector<std::string> split(const std::string &str, char d)
     return r;
 }
 
-int main(int argc, char const *argv[])
+
+int main()
 {
     try
     {
-        std::vector<std::vector<std::string> > ip_pool;
+        std::vector<std::vector<std::string>> ip_pool;
 
         for(std::string line; std::getline(std::cin, line);)
         {
-            std::vector<std::string> v = split(line, '\t');
+            const auto v = split(line, '\t');
             ip_pool.push_back(split(v.at(0), '.'));
         }
 
         // TODO reverse lexicographically sort
+        
 
-        for(std::vector<std::vector<std::string> >::const_iterator ip = ip_pool.cbegin(); ip != ip_pool.cend(); ++ip)
+        for(const auto & ip : ip_pool) 
         {
-            for(std::vector<std::string>::const_iterator ip_part = ip->cbegin(); ip_part != ip->cend(); ++ip_part)
-            {
-                if (ip_part != ip->cbegin())
-                {
-                    std::cout << ".";
-
-                }
-                std::cout << *ip_part;
-            }
-            std::cout << std::endl;
+            auto ipStr = std::accumulate(ip.begin() + 1, ip.end(), ip.front(), [](auto first, auto second) {
+                return first + '.' + second;
+            });
+            std::cout << ipStr << std::endl;
         }
 
         // 222.173.235.246
