@@ -49,7 +49,7 @@ int main()
 
         for(const auto & ip : ip_pool) 
         {
-            auto ipStr = std::accumulate(ip.begin() + 1, ip.end(), ip.front(), [](auto first, auto second) {
+            auto ipStr = std::accumulate(ip.begin() + 1, ip.end(), ip.front(), [](auto& first, auto& second) {
                 return first + '.' + second;
             });
             std::cout << ipStr << std::endl;
