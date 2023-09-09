@@ -1,3 +1,5 @@
+#include "lib.h"
+
 #include <cassert>
 #include <cstdlib>
 #include <iostream>
@@ -5,6 +7,10 @@
 #include <algorithm>
 #include <numeric>
 #include <vector>
+#include <array>
+
+#define FMT_ENFORCE_COMPILE_STRING
+#include <fmt/format.h>
 
 // ("",  '.') -> [""]
 // ("11", '.') -> ["11"]
@@ -36,23 +42,27 @@ int main()
 {
     try
     {
-        std::vector<std::vector<std::string>> ip_pool;
+        std::vector<ipv4_u> ip_pool;
 
         for(std::string line; std::getline(std::cin, line);)
         {
-            const auto v = split(line, '\t');
-            ip_pool.push_back(split(v.at(0), '.'));
+            auto v = split(line, '\t');
+            v = split(v.at(0), '.');
+            ipv4_u ip;
+            ip.byteView[0] = std::atoi(v[0].c_str());
+            ip.byteView[1] = std::atoi(v[1].c_str());
+            ip.byteView[2] = std::atoi(v[2].c_str());
+            ip.byteView[3] = std::atoi(v[3].c_str());
+            ip_pool.emplace_back(ip);
         }
 
         // TODO reverse lexicographically sort
+        std::sort(ip_pool.begin(), ip_pool.end(), compareGreaterIPv4);
         
 
         for(const auto & ip : ip_pool) 
         {
-            auto ipStr = std::accumulate(ip.begin() + 1, ip.end(), ip.front(), [](auto& first, auto& second) {
-                return first + '.' + second;
-            });
-            std::cout << ipStr << std::endl;
+            std::cout << fmt::format(FMT_STRING("{}.{}.{}.{}"), ip.byteView[0], ip.byteView[1], ip.byteView[2], ip.byteView[3]) << std::endl;
         }
 
         // 222.173.235.246
@@ -63,8 +73,14 @@ int main()
         // 1.29.168.152
         // 1.1.234.8
 
-        // TODO filter by first byte and output
+        // TODO filter by first byte and output   
         // ip = filter(1)
+        for(const auto & ip : ip_pool) 
+        {
+            if (ip.byteView[0] == 1){
+                std::cout << fmt::format(FMT_STRING("{}.{}.{}.{}"), ip.byteView[0], ip.byteView[1], ip.byteView[2], ip.byteView[3]) << std::endl;
+            }
+        }
 
         // 1.231.69.33
         // 1.87.203.225
@@ -74,6 +90,13 @@ int main()
 
         // TODO filter by first and second bytes and output
         // ip = filter(46, 70)
+        for(const auto & ip : ip_pool) 
+        {
+            if (ip.byteView[0] == 46 && ip.byteView[1] == 70){
+                std::cout << fmt::format(FMT_STRING("{}.{}.{}.{}"), ip.byteView[0], ip.byteView[1], ip.byteView[2], ip.byteView[3]) << std::endl;
+            }
+        }
+
 
         // 46.70.225.39
         // 46.70.147.26
@@ -82,6 +105,13 @@ int main()
 
         // TODO filter by any byte and output
         // ip = filter_any(46)
+        for(const auto & ip : ip_pool) 
+        {
+            #define BYTE_VALUE_TO_FIND 46 
+            if (ip.byteView[0] == BYTE_VALUE_TO_FIND || ip.byteView[1] == BYTE_VALUE_TO_FIND || ip.byteView[2] == BYTE_VALUE_TO_FIND || ip.byteView[3] == BYTE_VALUE_TO_FIND){
+                std::cout << fmt::format(FMT_STRING("{}.{}.{}.{}"), ip.byteView[0], ip.byteView[1], ip.byteView[2], ip.byteView[3]) << std::endl;
+            }
+        }
 
         // 186.204.34.46
         // 186.46.222.194

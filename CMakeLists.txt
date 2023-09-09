@@ -6,6 +6,7 @@ set(PROJECT_VESRION 0.0.${PATCH_VERSION})
 project(ip_filter VERSION ${PROJECT_VESRION})
 
 find_package(Boost COMPONENTS unit_test_framework REQUIRED)
+find_package(fmt REQUIRED)
 
 add_executable(ip_filter main.cpp)
 add_library(ipv4filter lib.cpp)
@@ -23,8 +24,13 @@ set_target_properties(test_ipfilter PROPERTIES
     INCLUDE_DIRECTORIES ${Boost_INCLUDE_DIR}
 )
 
+
+target_link_libraries(ipv4filter PRIVATE
+    fmt
+)
 target_link_libraries(ip_filter PRIVATE
     ipv4filter
+    fmt
 )
 target_link_libraries(test_ipfilter
     ${Boost_LIBRARIES}
